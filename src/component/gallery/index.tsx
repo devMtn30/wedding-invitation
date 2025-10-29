@@ -33,6 +33,8 @@ type ClickMove = "left" | "right" | null
 export const Gallery = () => {
   const { openModal, closeModal } = useModal()
   const carouselRef = useRef<HTMLDivElement>({} as HTMLDivElement)
+  const indicatorRef = useRef<HTMLDivElement>({} as HTMLDivElement)
+  const activeIndicatorRef = useRef<HTMLButtonElement | null>(null)
 
   useEffect(() => {
     // preload images
@@ -244,6 +246,27 @@ export const Gallery = () => {
     }
   }, [onMouseMove, onTouchMove, onMouseTouchUp])
 
+  useEffect(() => {
+    const indicatorElement = indicatorRef.current
+    const activeIndicatorElement = activeIndicatorRef.current
+
+    if (!indicatorElement || !activeIndicatorElement) return
+
+    const targetScrollLeft =
+      activeIndicatorElement.offsetLeft -
+      (indicatorElement.clientWidth - activeIndicatorElement.offsetWidth) / 2
+    const maxScroll = Math.max(
+      indicatorElement.scrollWidth - indicatorElement.clientWidth,
+      0,
+    )
+    const nextScrollLeft = Math.min(Math.max(targetScrollLeft, 0), maxScroll)
+
+    indicatorElement.scrollTo({
+      left: nextScrollLeft,
+      behavior: "smooth",
+    })
+  }, [slide])
+
   const onIndicatorClick = useCallback(
     (status: Status, srcIdx: number, dstIdx: number) => {
       if (status !== "stationary" || srcIdx === dstIdx) return
@@ -342,7 +365,7 @@ export const Gallery = () => {
             </div>
           </div>
         </div>
-        <div className="carousel-indicator">
+        <div className="carousel-indicator" ref={indicatorRef}>
           {CAROUSEL_ITEMS.map((_, idx) => (
             <button
               key={idx}
@@ -350,6 +373,9 @@ export const Gallery = () => {
               onClick={() =>
                 onIndicatorClick(statusRef.current, slideRef.current, idx)
               }
+              ref={(element) => {
+                if (idx === slide) activeIndicatorRef.current = element
+              }}
             />
           ))}
         </div>
