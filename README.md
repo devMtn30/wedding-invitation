@@ -82,7 +82,7 @@ npm run dev
 
 2. 이미지 교체
    - `src/images`: 표지 이미지 및 갤러리 이미지
-   - `public/preview_image.png`: SNS 공유용 미리보기 이미지
+   - `public/preview_image.jpg`: SNS 공유용 미리보기 이미지
 
 3. 글귀 수정
    - `src/component/location`: 예식장 위치 관련 글귀 수정
